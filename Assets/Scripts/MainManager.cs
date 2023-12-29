@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,19 +13,23 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text BestScoreText;
     
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
 
-    
+    PersistenceHandler persistence;
+
     // Start is called before the first frame update
     void Start()
     {
+        persistence = new PersistenceHandler();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
+        BestScoreText.text = $"Best Score : {persistence.GetBestUser()}: {persistence.GetBestScore()}";
+
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
         {
@@ -72,5 +77,10 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        PlayerDataHandler.Instance.Score = m_Points;
+
+        Debug.Log(PlayerDataHandler.Instance.PlayerName + " " + PlayerDataHandler.Instance.Score);
+        persistence.update();
+
     }
 }
